@@ -65,7 +65,6 @@ exports.updateTransaction = async (req, res) => {
         if(amount !== undefined) transaction.amount = amount;
         if (type !== undefined) transaction.type = type;
         if(category !== undefined) transaction.category = category;
-        transaction.date = Date.now()
 
         await transaction.save();
         res.json(transaction)
@@ -84,6 +83,6 @@ exports.deleteTransaction = async (req, res) => {
         
         res.json(transaction)
     } catch (error) {
-        res.status(500).json({message: "Error to delete transaction"})
+        res.status(500).json({message: "Error to delete transaction", error: error.message})
     }
 }
