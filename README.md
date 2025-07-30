@@ -1,11 +1,10 @@
+
 # API Dashboard Financeiro
 
 ## Base URL
+```
 http://localhost:5000/api
-
-yaml
-Copiar
-Editar
+```
 
 ---
 
@@ -13,11 +12,9 @@ Editar
 
 Todas as rotas de transações requerem o token JWT no header:
 
+```
 Authorization: Bearer <token>
-
-yaml
-Copiar
-Editar
+```
 
 ---
 
@@ -34,11 +31,11 @@ Registrar novo usuário.
   "email": "joao@email.com",
   "password": "123456"
 }
-Response 201:
+```
 
-json
-Copiar
-Editar
+**Response 201:**
+
+```json
 {
   "user": {
     "id": "64df2a173b9e47359fd301ab",
@@ -46,23 +43,25 @@ Editar
     "email": "joao@email.com"
   }
 }
-POST /api/auth/login
+```
+
+---
+
+### POST /api/auth/login  
 Fazer login.
 
-Request Body (JSON):
+**Request Body (JSON):**
 
-json
-Copiar
-Editar
+```json
 {
   "email": "joao@email.com",
   "password": "123456"
 }
-Response 200:
+```
 
-json
-Copiar
-Editar
+**Response 200:**
+
+```json
 {
   "user": {
     "id": "64df2a173b9e47359fd301ab",
@@ -70,21 +69,24 @@ Editar
     "email": "joao@email.com"
   }
 }
-Rotas de Transações
-GET /api/transactions
+```
+
+---
+
+## Rotas de Transações
+
+### GET /api/transactions  
 Lista todas as transações do usuário autenticado.
 
-Headers:
+**Headers:**
 
-makefile
-Copiar
-Editar
+```
 Authorization: Bearer <token>
-Response 200:
+```
 
-json
-Copiar
-Editar
+**Response 200:**
+
+```json
 [
   {
     "_id": "64df2a173b9e47359fd301ac",
@@ -96,20 +98,22 @@ Editar
     "user": "64df2a173b9e47359fd301ab"
   }
 ]
-POST /api/transactions
+```
+
+---
+
+### POST /api/transactions  
 Criar nova transação.
 
-Headers:
+**Headers:**
 
-makefile
-Copiar
-Editar
+```
 Authorization: Bearer <token>
-Request Body (JSON):
+```
 
-json
-Copiar
-Editar
+**Request Body (JSON):**
+
+```json
 {
   "title": "Supermercado",
   "amount": 200,
@@ -117,11 +121,11 @@ Editar
   "category": "Alimentação",
   "date": "2025-07-30T14:00:00.000Z"
 }
-Response 201:
+```
 
-json
-Copiar
-Editar
+**Response 201:**
+
+```json
 {
   "_id": "64df2a173b9e47359fd301ad",
   "title": "Supermercado",
@@ -131,20 +135,22 @@ Editar
   "date": "2025-07-30T14:00:00.000Z",
   "user": "64df2a173b9e47359fd301ab"
 }
-GET /api/transactions/:id
+```
+
+---
+
+### GET /api/transactions/:id  
 Buscar transação específica.
 
-Headers:
+**Headers:**
 
-makefile
-Copiar
-Editar
+```
 Authorization: Bearer <token>
-Response 200:
+```
 
-json
-Copiar
-Editar
+**Response 200:**
+
+```json
 {
   "_id": "64df2a173b9e47359fd301ad",
   "title": "Supermercado",
@@ -154,3 +160,63 @@ Editar
   "date": "2025-07-30T14:00:00.000Z",
   "user": "64df2a173b9e47359fd301ab"
 }
+```
+
+---
+
+### PUT /api/transactions/:id  
+Atualizar uma transação.
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Request Body (JSON):**
+
+```json
+{
+  "title": "Supermercado Atualizado",
+  "amount": 250
+}
+```
+
+**Response 200:**
+
+```json
+{
+  "_id": "64df2a173b9e47359fd301ad",
+  "title": "Supermercado Atualizado",
+  "amount": 250,
+  "type": "expense",
+  "category": "Alimentação",
+  "date": "2025-07-30T14:00:00.000Z",
+  "user": "64df2a173b9e47359fd301ab"
+}
+```
+
+---
+
+### DELETE /api/transactions/:id  
+Deletar uma transação.
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Response 200:**
+
+```json
+{
+  "_id": "64df2a173b9e47359fd301ad",
+  "title": "Supermercado Atualizado",
+  "amount": 250,
+  "type": "expense",
+  "category": "Alimentação",
+  "date": "2025-07-30T14:00:00.000Z",
+  "user": "64df2a173b9e47359fd301ab"
+}
+```
