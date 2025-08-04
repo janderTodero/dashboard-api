@@ -24,6 +24,7 @@ exports.register = async (req, res) => {
             .status(201)
             .json({
                 user: { id: user._id, name: user.name, email: user.email },
+                token,
         });
         
     } catch (error) {
@@ -49,6 +50,7 @@ exports.login = async (req, res) => {
             .status(200)
             .json({
                 user: { id: user._id, name: user.name, email: user.email },
+                token,
         });
     } catch (error) {
         res.status(500).json({message: "Error during login", error: error.message})
