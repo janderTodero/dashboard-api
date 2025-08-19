@@ -1,12 +1,12 @@
 const Limit = require("../models/Limit")
 
 exports.createLimit = async (req, res) => {
-    const { value } = req.body
+    const { limit } = req.body
     const userId = req.user.id
 
     try {
         const newLimit = new Limit({
-            value: value,
+            limit: limit,
             user: userId,
         })
 
@@ -30,13 +30,13 @@ exports.getLimit = async (req, res) => {
 
 exports.changeLimit = async (req, res) => {
     const userId = req.user.id
-    const { value } = req.body
+    const { limit } = req.body
 
     try {
-        let limit = await Limit.findOne({ user: userId })
+        let updatedLimit = await Limit.findOne({ user: userId })
 
-        if(limit) {
-            limit.value = value;
+        if(updatedLimit) {
+            updatedLimit.limit = limit;
             await limit.save()
         } else {
             limit = await Limit.create({user: userId, value})

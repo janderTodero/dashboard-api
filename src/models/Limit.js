@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const limitSchema = new mongoose.Schema(
     {
-        value: {
+        limit: {
             type: Number,
         },
         user: {
