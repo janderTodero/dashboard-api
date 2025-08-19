@@ -17,6 +17,17 @@ exports.createLimit = async (req, res) => {
     }
 }
 
+exports.getLimit = async (req, res) => {
+    const userId = req.user.id
+
+    try {
+            const limit = await Limit.find({user: userId})
+            res.status(200).json(limit)
+        } catch (error) {
+            res.status(500).json({message: "Error to get transactions", error: error.message})
+        }
+}
+
 exports.changeLimit = async (req, res) => {
     const userId = req.user.id
     const { value } = req.body
