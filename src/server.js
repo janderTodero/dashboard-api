@@ -5,6 +5,7 @@ require("dotenv").config()
 
 const authRoutes = require("./routes/authRoutes")
 const transactionRoutes = require("./routes/transactionRoutes")
+const limitRoutes = require("./routes/limitRoutes")
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.use(express.json())
 
 app.use("/api/auth", authRoutes)
 app.use("/api/transactions", transactionRoutes)
+app.use("/api/limit", limitRoutes)
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
     console.log('MongoDB conectado')
