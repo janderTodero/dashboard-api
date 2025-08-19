@@ -6,7 +6,7 @@ const router = express.Router()
 router.use(authMiddleware)
 
 router.get("/", getLimit)
-router.post("/new", createLimit)
-router.put("/update", changeLimit)
+router.post("/", createLimit)
+router.put("/", changeLimit)
 
 module.exports = router
