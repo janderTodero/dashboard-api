@@ -111,6 +111,9 @@ exports.importTransactions = async (req, res) => {
                     // type will be set to 'expense'
                 })
             }
+            if (!data.title || isNaN(data.amount) || data.amount < 0) {
+                return; 
+            }
         })
         .on('end', async () => {
             try {

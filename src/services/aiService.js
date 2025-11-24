@@ -3,11 +3,11 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 exports.categorizeTransactions = async (transactions) => {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const prompt = `
     Analyze the following list of bank transactions and assign a category to each one.
-    If the amount is negative number, IGNORE the transaction.
+    If the amount is a negative number, IGNORE the transaction.
     The categories should be standard personal finance categories like: Food, Transport, Housing, Entertainment, Health, Shopping, Utilities, Salary, Investment, Other.
     
     Return ONLY a JSON array of strings, where each string is the category for the corresponding transaction in the input list. The order must match exactly.
