@@ -102,18 +102,18 @@ exports.importTransactions = async (req, res) => {
     fs.createReadStream(req.file.path)
         .pipe(csv())
         .on('data', (data) => {
+            const amount = parseFloat(data.amount)
+
             // CSV columns: date, title, amount
-            if (data.title && data.amount) {
-                rawTransactions.push({
-                    title: data.title,
-                    amount: parseFloat(data.amount),
-                    date: data.date ? new Date(data.date) : new Date(),
-                    // type will be set to 'expense'
-                })
+            if (!data.title || !amount || amount <= 0 ) {
+                return;
             }
-            if (!data.title || isNaN(data.amount) || data.amount < 0) {
-                return; 
-            }
+            rawTransactions.push({
+                title: data.title,
+                amount: parseFloat(data.amount),
+                date: data.date ? new Date(data.date) : new Date(),
+                // type will be set to 'expense'
+            }) 
         })
         .on('end', async () => {
             try {
