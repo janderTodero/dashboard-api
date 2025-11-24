@@ -7,7 +7,7 @@ exports.categorizeTransactions = async (transactions) => {
 
     const prompt = `
     Analyze the following list of bank transactions and assign a category to each one.
-    If the transaction is negative, ignore it.
+    If the amount is negative number, IGNORE the transaction.
     The categories should be standard personal finance categories like: Food, Transport, Housing, Entertainment, Health, Shopping, Utilities, Salary, Investment, Other.
     
     Return ONLY a JSON array of strings, where each string is the category for the corresponding transaction in the input list. The order must match exactly.
