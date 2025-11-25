@@ -105,7 +105,7 @@ exports.importTransactions = async (req, res) => {
             const amount = parseFloat(data.amount)
 
             // CSV columns: date, title, amount
-            if (!data.title || !amount || amount <= 0 ) {
+            if (!data.title || !amount || amount <= 0) {
                 return;
             }
             rawTransactions.push({
@@ -113,7 +113,7 @@ exports.importTransactions = async (req, res) => {
                 amount: parseFloat(data.amount),
                 date: data.date ? new Date(data.date) : new Date(),
                 // type will be set to 'expense'
-            }) 
+            })
         })
         .on('end', async () => {
             try {
@@ -145,6 +145,105 @@ exports.importTransactions = async (req, res) => {
             } catch (error) {
                 if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path)
                 res.status(500).json({ message: "Error importing transactions", error: error.message })
+            }
+        })
+        .on('error', (error) => {
+            if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path)
+            res.status(500).json({ message: "Error reading CSV file", error: error.message })
+        })
+}
+
+exports.importBankStatement = async (req, res) => {
+    const userId = req.user.id
+    const rawTransactions = []
+
+    if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" })
+    }
+
+    const aiService = require('../services/aiService');
+
+    let useDescriptionAsTitle = false;
+
+    fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', (data) => {
+            const amount = parseFloat(data.amount)
+
+            // Check if we need to use description instead of title
+            if (!data.title && data.description) {
+                useDescriptionAsTitle = true;
+            }
+
+            const titleToUse = data.title || data.description;
+
+            // CSV columns: date, title (or description), amount
+            if (!titleToUse || isNaN(amount)) {
+                return;
+            }
+            rawTransactions.push({
+                title: titleToUse,
+                amount: amount, // Keep original sign for now
+                date: data.date ? (() => {
+                    const [day, month, year] = data.date.split('/');
+                    return new Date(`${year}-${month}-${day}`);
+                })() : new Date(),
+            })
+        })
+        .on('end', async () => {
+            try {
+                if (rawTransactions.length === 0) {
+                    if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path)
+                    return res.status(400).json({ message: "No valid transactions found in CSV" })
+                }
+
+                // Get categories from AI with specific instruction to ignore 'identificador'
+                // If using description as title, ask AI to summarize it
+                const aiOptions = {
+                    additionalInstructions: "Ignorar a coluna 'identificador' se presente na descrição ou dados.",
+                    summarizeTitles: useDescriptionAsTitle
+                };
+
+                const aiResults = await aiService.categorizeTransactions(rawTransactions, aiOptions);
+
+                // Merge data
+                const finalTransactions = rawTransactions.map((t, index) => {
+                    let category = 'Other';
+                    let title = t.title;
+
+                    if (useDescriptionAsTitle) {
+                        // aiResults should be an array of objects { category, title }
+                        if (aiResults[index]) {
+                            category = aiResults[index].category || 'Other';
+                            title = aiResults[index].title || t.title;
+                        }
+                    } else {
+                        // aiResults should be an array of strings (categories)
+                        category = aiResults[index] || 'Other';
+                    }
+
+                    return {
+                        ...t,
+                        title: title,
+                        type: t.amount >= 0 ? 'income' : 'expense',
+                        amount: Math.abs(t.amount), // Store absolute value
+                        category: category,
+                        user: userId
+                    };
+                });
+
+                await Transaction.insertMany(finalTransactions)
+
+                if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path)
+
+                res.status(201).json({
+                    message: "Bank statement imported and categorized successfully",
+                    count: finalTransactions.length,
+                    sample: finalTransactions.slice(0, 3) // Return a sample to show categories
+                })
+            } catch (error) {
+                if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path)
+                res.status(500).json({ message: "Error importing bank statement", error: error.message })
             }
         })
         .on('error', (error) => {

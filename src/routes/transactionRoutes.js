@@ -1,5 +1,5 @@
 const express = require('express')
-const { create, getAllTransactions, readTransaction, updateTransaction, deleteTransaction, importTransactions } = require('../controllers/transactionController')
+const { create, getAllTransactions, readTransaction, updateTransaction, deleteTransaction, importTransactions, importBankStatement } = require('../controllers/transactionController')
 const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const authMiddleware = require('../middlewares/authMiddleware')
@@ -18,6 +18,17 @@ router.post("/import", (req, res, next) => {
         next()
     })
 }, importTransactions)
+
+router.post("/import-bank-statement", (req, res, next) => {
+    upload.single('file')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).json({ message: "Upload error: " + err.message, code: err.code })
+        } else if (err) {
+            return res.status(500).json({ message: "Unknown upload error: " + err.message })
+        }
+        next()
+    })
+}, importBankStatement)
 router.get("/", getAllTransactions)
 router.get("/:id", readTransaction)
 router.put("/:id", updateTransaction)
