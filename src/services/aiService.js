@@ -1,4 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+require('dotenv').config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -8,7 +9,7 @@ exports.categorizeTransactions = async (transactions) => {
     const prompt = `
     Analyze the following list of bank transactions and assign a category to each one.
     If the amount is a negative number, IGNORE the transaction.
-    The categories should be standard personal finance categories like: Food, Transport, Housing, Entertainment, Health, Shopping, Utilities, Salary, Investment, Other.
+    The categories should be standard personal finance categories, but in portuguese, like: Alimentação, Transporte, Moradia, Entretenimento, Saúde, Lazer, Utilidades, Salário, Investmento, Outros.
     
     Return ONLY a JSON array of strings, where each string is the category for the corresponding transaction in the input list. The order must match exactly.
     Do not include markdown formatting or code blocks in the response. Just the raw JSON array.
