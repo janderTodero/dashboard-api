@@ -3,7 +3,7 @@
 
 ## Base URL
 ```
-http://localhost:5000/api
+https://dashboard-api-1-nnoj.onrender.com/api
 ```
 
 ---
@@ -220,3 +220,83 @@ Authorization: Bearer <token>
   "user": "64df2a173b9e47359fd301ab"
 }
 ```
+
+---
+
+### POST /api/transactions/import
+Importar transações via arquivo CSV genérico.
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Request Body (Multipart/Form-Data):**
+
+- `file`: Arquivo CSV contendo as transações. Colunas esperadas: `title`, `amount`, `date`.
+
+**Response 201:**
+
+```json
+{
+  "message": "Transactions imported and categorized successfully",
+  "count": 10,
+  "sample": [
+    {
+      "title": "Supermercado",
+      "amount": 200,
+      "type": "expense",
+      "category": "Alimentação",
+      "date": "2025-07-30T14:00:00.000Z",
+      "user": "..."
+    }
+  ]
+}
+```
+
+---
+
+### POST /api/transactions/import-bank-statement
+Importar extrato bancário via arquivo CSV. Utiliza IA para categorização automática e resumo de títulos (se necessário). O tipo (receita/despesa) é definido automaticamente pelo sinal do valor.
+
+**Headers:**
+
+```
+Authorization: Bearer <token>
+```
+
+**Request Body (Multipart/Form-Data):**
+
+- `file`: Arquivo CSV do extrato bancário. Colunas esperadas: `date`, `amount`, `title` (ou `description`).
+
+**Response 201:**
+
+```json
+{
+  "message": "Bank statement imported and categorized successfully",
+  "count": 15,
+  "sample": [
+    {
+      "title": "Uber",
+      "amount": 25.50,
+      "type": "expense",
+      "category": "Transporte",
+      "date": "2025-07-30T14:00:00.000Z",
+      "user": "..."
+    }
+  ]
+}
+```
+
+---
+
+## Integração com IA
+
+O projeto utiliza a API do Google Gemini para funcionalidades inteligentes:
+
+- **Categorização Automática:** As transações importadas são analisadas e categorizadas automaticamente (ex: Alimentação, Transporte, Lazer).
+- **Resumo de Títulos:** Na importação de extrato bancário, descrições longas são resumidas para títulos mais claros.
+
+**Configuração:**
+É necessário configurar a variável de ambiente `GEMINI_API_KEY` no arquivo `.env`.
